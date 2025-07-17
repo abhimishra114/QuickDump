@@ -50,19 +50,19 @@
         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
           <label class="flex flex-col min-w-40 flex-1">
             <p class="text-[#111418] text-base font-medium leading-normal pb-2">Database Type</p>
-            <select
+            <select id="dbType"
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 bg-[image:--select-button-svg] placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
             >
-              <option value="one"></option>
-              <option value="two">MySQL</option>
-              <option value="three">MongoDB</option>
+              <option value=""></option>
+              <option value="mysql">MySQL</option>
+              <option value="mongodb">MongoDB</option>
             </select>
           </label>
         </div>
         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
           <label class="flex flex-col min-w-40 flex-1">
             <p class="text-[#111418] text-base font-medium leading-normal pb-2">Host</p>
-            <input
+            <input id="host"
                     placeholder="Enter host"
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
                     value=""
@@ -72,7 +72,7 @@
         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
           <label class="flex flex-col min-w-40 flex-1">
             <p class="text-[#111418] text-base font-medium leading-normal pb-2">Port</p>
-            <input
+            <input id="port"
                     placeholder="Enter port"
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
                     value=""
@@ -82,7 +82,7 @@
         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
           <label class="flex flex-col min-w-40 flex-1">
             <p class="text-[#111418] text-base font-medium leading-normal pb-2">Username</p>
-            <input
+            <input id="username"
                     placeholder="Enter username"
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
                     value=""
@@ -92,7 +92,7 @@
         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
           <label class="flex flex-col min-w-40 flex-1">
             <p class="text-[#111418] text-base font-medium leading-normal pb-2">Password</p>
-            <input
+            <input id="password"
                     placeholder="Enter password"
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
                     value=""
@@ -102,7 +102,7 @@
         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
           <label class="flex flex-col min-w-40 flex-1">
             <p class="text-[#111418] text-base font-medium leading-normal pb-2">Database Name</p>
-            <input
+            <input id="dbName"
                     placeholder="Enter database name"
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
                     value=""
@@ -110,15 +110,41 @@
           </label>
         </div>
         <div class="flex px-4 py-3">
-          <button
+          <button type="button"
+                  onclick="downloadBackup()"
                   class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#0c7ff2] text-white text-sm font-bold leading-normal tracking-[0.015em]"
           >
             <span class="truncate">Download Backup</span>
           </button>
+
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  document.querySelector("button").addEventListener("click", function () {
+    const dbType = document.getElementById("dbType").value.trim().toLowerCase();
+    const host = document.getElementById("host").value.trim();
+    const port = document.getElementById("port").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const dbName = document.getElementById("dbName").value.trim();
+
+    // Basic validation
+    if (!dbType || !host || !port || !dbName) {
+      alert("All fields are required.");
+      return;
+    }
+
+    // Construct download URL
+    const url = `/api/backup/download?dbType=${encodeURIComponent(dbType)}&host=${encodeURIComponent(host)}&port=${encodeURIComponent(port)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&dbName=${encodeURIComponent(dbName)}`;
+
+    // Redirect to download
+    window.location.href = url;
+  });
+</script>
+
 </body>
 </html>

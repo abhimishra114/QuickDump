@@ -35,76 +35,6 @@ import java.util.zip.ZipOutputStream;
 public class BackupService {
 
 
-    public String performBackup(BackupRequest request) throws IOException, InterruptedException {
-        String dbType = request.getDbType().toLowerCase();
-
-        String backupDir = "backups";
-        Files.createDirectories(Paths.get(backupDir));
-
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String zipFileName = request.getDbName() + "_" + timestamp + ".zip";
-        String zipFilePath = backupDir + File.separator + zipFileName;
-
-        ProcessBuilder pb;
-        File tempBackupDir = new File(backupDir + File.separator + request.getDbName() + "_" + timestamp);
-        Files.createDirectories(tempBackupDir.toPath());
-
-        if ("mysql".equals(dbType)) {
-            // Create MySQL dump
-            List<String> command = Arrays.asList(
-                    "mysqldump",
-                    "-h", request.getHost(),
-                    "-P", String.valueOf(request.getPort()),
-                    "-u", request.getUsername(),
-                    "-p" + request.getPassword(),
-                    request.getDbName()
-            );
-
-            File sqlFile = new File(tempBackupDir, request.getDbName() + ".sql");
-            pb = new ProcessBuilder(command);
-            pb.redirectOutput(sqlFile);
-            // Discard stderr to prevent warnings from polluting .sql
-            String nullDevice = System.getProperty("os.name").toLowerCase().contains("win") ? "NUL" : "/dev/null";
-            pb.redirectError(new File(nullDevice));
-
-        } else if ("mongodb".equals(dbType)) {
-            // Create MongoDB dump
-            List<String> command = new ArrayList<>();
-            command.add("mongodump");
-            command.add("--host=" + request.getHost());
-            command.add("--port=" + request.getPort());
-            command.add("--db=" + request.getDbName());
-            if (request.getUsername() != null && !request.getUsername().isBlank()) {
-                command.add("--username=" + request.getUsername());
-                command.add("--password=" + request.getPassword());
-            }
-            command.add("--out=" + tempBackupDir.getAbsolutePath());
-
-            pb = new ProcessBuilder(command);
-            pb.redirectErrorStream(true);
-
-        } else {
-            throw new UnsupportedOperationException("Unsupported database type: " + dbType);
-        }
-
-        // Run backup command
-        Process process = pb.start();
-        int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            throw new RuntimeException("Backup failed. Exit code: " + exitCode);
-        }
-
-        // Compress the backup folder
-        try (FileOutputStream fos = new FileOutputStream(zipFilePath);
-             ZipOutputStream zos = new ZipOutputStream(fos)) {
-            zipDirectory(tempBackupDir, tempBackupDir.getName(), zos);
-        }
-
-        // Clean up temp folder
-        deleteDirectory(tempBackupDir);
-
-        return "Backup successful. File: " + zipFilePath;
-    }
 
     private void deleteDirectory(File directory) throws IOException {
         if (directory.isDirectory()) {
@@ -183,6 +113,82 @@ public class BackupService {
     }
 
 
+    private File generateBackupZip(BackupRequest request, boolean storePermanently) throws IOException, InterruptedException {
+        String dbType = request.getDbType().toLowerCase();
+
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String filename = request.getDbName() + "_" + timestamp + ".zip";
+
+        File baseDir = storePermanently
+                ? new File("backups")
+                : Files.createTempDirectory("backup_").toFile();
+
+        if (storePermanently) {
+            Files.createDirectories(baseDir.toPath());
+        }
+
+        File tempBackupDir = new File(baseDir, request.getDbName() + "_" + timestamp);
+        Files.createDirectories(tempBackupDir.toPath());
+
+        ProcessBuilder pb;
+
+        if ("mysql".equals(dbType)) {
+            List<String> command = Arrays.asList(
+                    "mysqldump",
+                    "-h", request.getHost(),
+                    "-P", String.valueOf(request.getPort()),
+                    "-u", request.getUsername(),
+                    "-p" + request.getPassword(),
+                    request.getDbName()
+            );
+
+            File sqlFile = new File(tempBackupDir, request.getDbName() + ".sql");
+            pb = new ProcessBuilder(command);
+            pb.redirectOutput(sqlFile);
+            String nullDevice = System.getProperty("os.name").toLowerCase().contains("win") ? "NUL" : "/dev/null";
+            pb.redirectError(new File(nullDevice));
+
+        } else if ("mongodb".equals(dbType)) {
+            List<String> command = new ArrayList<>(List.of(
+                    "mongodump",
+                    "--host=" + request.getHost(),
+                    "--port=" + request.getPort(),
+                    "--db=" + request.getDbName()
+            ));
+            if (request.getUsername() != null && !request.getUsername().isBlank()) {
+                command.add("--username=" + request.getUsername());
+                command.add("--password=" + request.getPassword());
+            }
+            command.add("--out=" + tempBackupDir.getAbsolutePath());
+
+            pb = new ProcessBuilder(command);
+            pb.redirectErrorStream(true);
+
+        } else {
+            throw new UnsupportedOperationException("Unsupported database type: " + dbType);
+        }
+
+        Process process = pb.start();
+        if (process.waitFor() != 0) {
+            throw new RuntimeException("Backup failed.");
+        }
+
+        File zipFile = new File(baseDir, filename);
+        try (FileOutputStream fos = new FileOutputStream(zipFile);
+             ZipOutputStream zos = new ZipOutputStream(fos)) {
+            zipDirectory(tempBackupDir, tempBackupDir.getName(), zos);
+        }
+
+        deleteDirectory(tempBackupDir); // Clean temp
+
+        return zipFile;
+    }
+
+    public String performBackup(BackupRequest request) throws IOException, InterruptedException {
+        File zipFile = generateBackupZip(request, true);
+        return "Backup successful. File: " + zipFile.getAbsolutePath();
+    }
+
     public DownloadResponse backupAndDownload(
             String dbType,
             String host,
@@ -191,55 +197,34 @@ public class BackupService {
             String password,
             String dbName) throws IOException, InterruptedException {
 
-        Path tempDir = Files.createTempDirectory("backup_");
-        File backupDir = tempDir.toFile();
-        File dumpTarget = new File(backupDir, dbName);
+        BackupRequest request = new BackupRequest();
+        request.setDbType(dbType);
+        request.setHost(host);
+        request.setPort(port);
+        request.setUsername(username);
+        request.setPassword(password);
+        request.setDbName(dbName);
 
-        List<String> command;
-        if ("mysql".equalsIgnoreCase(dbType)) {
-            File sqlFile = new File(backupDir, dbName + ".sql");
-            command = List.of("mysqldump", "-h", host, "-P", String.valueOf(port), "-u", username, "-p" + password, dbName);
-            ProcessBuilder pb = new ProcessBuilder(command);
-            pb.redirectOutput(sqlFile);
-            pb.redirectErrorStream(true);
-            Process process = pb.start();
-            if (process.waitFor() != 0) throw new RuntimeException("MySQL dump failed");
-
-        } else if ("mongodb".equalsIgnoreCase(dbType)) {
-            command = new ArrayList<>(List.of("mongodump", "--host=" + host, "--port=" + port, "--db=" + dbName));
-            if (!username.isBlank()) {
-                command.add("--username=" + username);
-                command.add("--password=" + password);
-            }
-            command.add("--out=" + dumpTarget.getAbsolutePath());
-            Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
-            if (process.waitFor() != 0) throw new RuntimeException("MongoDB dump failed");
-
-        } else {
-            throw new IllegalArgumentException("Unsupported DB type");
-        }
-
-        // Create the zip
-        String finalFilename = dbName + "_" + System.currentTimeMillis() + ".zip";
-        File zipFile = new File(tempDir.toFile(), finalFilename);
-        try (FileOutputStream fos = new FileOutputStream(zipFile);
-             ZipOutputStream zos = new ZipOutputStream(fos)) {
-            zipDirectory(backupDir, backupDir.getName(), zos);
-        }
+        File zipFile = generateBackupZip(request, false); // store temporarily
 
         InputStreamResource resource = new InputStreamResource(new FileInputStream(zipFile));
 
-        // Optional: schedule cleanup
+        // Auto delete zip after some time (5s)
         new Thread(() -> {
             try {
                 Thread.sleep(5000);
-                Files.deleteIfExists(zipFile.toPath());
-                Files.walk(tempDir).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+                zipFile.delete();
+                File parent = zipFile.getParentFile();
+                if (parent.getName().startsWith("backup_")) {
+                    Files.walk(parent.toPath())
+                            .sorted(Comparator.reverseOrder())
+                            .map(Path::toFile)
+                            .forEach(File::delete);
+                }
             } catch (Exception ignored) {}
         }).start();
 
-        return new DownloadResponse(resource, finalFilename);
+        return new DownloadResponse(resource, zipFile.getName());
     }
-
 
 }
