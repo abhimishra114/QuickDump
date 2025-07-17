@@ -1,5 +1,8 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
     <link
             rel="stylesheet"
@@ -35,76 +38,76 @@
             </div>
             <div class="flex flex-1 justify-end gap-8">
                 <div class="flex items-center gap-9">
-
                     <a class="text-[#111418] text-sm font-medium leading-normal" href="/backup">Backups</a>
                     <a class="text-[#111418] text-sm font-medium leading-normal" href="/restore">Restores</a>
-
                 </div>
-
             </div>
         </header>
         <div class="px-40 flex flex-1 justify-center py-5">
             <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
-                <div class="flex flex-wrap justify-between gap-3 p-4"><p
-                        class="text-[#111418] tracking-light text-[32px] font-bold leading-tight min-w-72">Restore
-                    Database</p></div>
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                    <label class="flex flex-col min-w-40 flex-1">
-                        <select id="dbType"
-                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 bg-[image:--select-button-svg] placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
-                        >
-                            <option value=""></option>
-                            <option value="mysql">MySQL</option>
-                            <option value="mongodb">MongoDB</option>
-                        </select>
-                    </label>
+                <div class="flex flex-wrap justify-between gap-3 p-4">
+                    <p class="text-[#111418] tracking-light text-[32px] font-bold leading-tight min-w-72">Restore Database</p>
                 </div>
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                    <label class="flex flex-col min-w-40 flex-1">
-                        <input id="host"
-                               placeholder="Host"
-                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
-                               value=""
-                        />
-                    </label>
-                </div>
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                    <label class="flex flex-col min-w-40 flex-1">
-                        <input id="port"
-                               placeholder="Port"
-                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
-                               value=""
-                        />
-                    </label>
-                </div>
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                    <label class="flex flex-col min-w-40 flex-1">
-                        <input id="username"
-                               placeholder="Username"
-                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
-                               value=""
-                        />
-                    </label>
-                </div>
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                    <label class="flex flex-col min-w-40 flex-1">
-                        <input id="password"
-                               placeholder="Password"
-                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
-                               value=""
-                        />
-                    </label>
-                </div>
-                <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
-                    <label class="flex flex-col min-w-40 flex-1">
-                        <input id="dbName"
-                               placeholder="Database Name"
-                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
-                               value=""
-                        />
-                    </label>
-                </div>
+
                 <form id="uploadForm" enctype="multipart/form-data" method="POST">
+                    <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <select id="dbType"
+                                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 bg-[image:--select-button-svg] placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
+                                    required>
+                                <option value="">Select Database Type</option>
+                                <option value="mysql">MySQL</option>
+                                <option value="mongodb">MongoDB</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <input id="host"
+                                   placeholder="Host"
+                                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
+                                   required />
+                        </label>
+                    </div>
+
+                    <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <input id="port"
+                                   placeholder="Port"
+                                   type="number"
+                                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
+                                   required />
+                        </label>
+                    </div>
+
+                    <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <input id="username"
+                                   placeholder="Username"
+                                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
+                                   required />
+                        </label>
+                    </div>
+
+                    <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <input id="password"
+                                   type="password"
+                                   placeholder="Password"
+                                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal" />
+                        </label>
+                    </div>
+
+                    <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+                        <label class="flex flex-col min-w-40 flex-1">
+                            <input id="dbName"
+                                   placeholder="Database Name"
+                                   class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] focus:outline-0 focus:ring-0 border border-[#dbe0e6] bg-white focus:border-[#dbe0e6] h-14 placeholder:text-[#60758a] p-[15px] text-base font-normal leading-normal"
+                                   required />
+                        </label>
+                    </div>
+
                     <div class="flex flex-col p-4">
                         <div class="flex flex-col items-center gap-6 rounded-lg border-2 border-dashed border-[#dbe0e6] px-6 py-14">
                             <div class="flex max-w-[480px] flex-col items-center gap-2">
@@ -114,22 +117,20 @@
                                     Or click to browse</p>
                             </div>
 
-                            <!-- File input (hidden) -->
+                            <!-- File input -->
                             <input
                                     type="file"
                                     id="fileInput"
                                     name="file"
                                     accept=".zip"
-                                    class="hidden"
-                                    required
-                            />
+                                    style="display: none;"
+                                    required />
 
-                            <!-- Trigger button for file upload -->
+                            <!-- Upload button -->
                             <button
                                     type="button"
                                     id="browseBtn"
-                                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f0f2f5] text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]"
-                            >
+                                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f0f2f5] text-[#111418] text-sm font-bold leading-normal tracking-[0.015em]">
                                 <span class="truncate">Upload</span>
                             </button>
 
@@ -142,8 +143,7 @@
                     <div class="flex px-4 py-3">
                         <button
                                 type="submit"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#0c7ff2] text-white text-sm font-bold leading-normal tracking-[0.015em]"
-                        >
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 flex-1 bg-[#0c7ff2] text-white text-sm font-bold leading-normal tracking-[0.015em]">
                             <span class="truncate">Restore Database</span>
                         </button>
                     </div>
@@ -165,73 +165,74 @@
     const uploadForm = document.getElementById("uploadForm");
     const status = document.getElementById("status");
 
-    browseBtn.addEventListener("click", () => {
-      fileInput.click();
+    // Fixed file picker trigger
+    browseBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        fileInput.click();
     });
 
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length > 0) {
-        fileName.textContent = "Selected: " + fileInput.files[0].name;
-      } else {
-        fileName.textContent = "";
-      }
+    fileInput.addEventListener("change", function() {
+        if (fileInput.files.length > 0) {
+            fileName.textContent = "Selected: " + fileInput.files[0].name;
+        } else {
+            fileName.textContent = "";
+        }
     });
 
     uploadForm.addEventListener("submit", async function (e) {
-      e.preventDefault();
+        e.preventDefault();
 
-      if (!fileInput.files.length) {
-        alert("Please select a .zip file to upload.");
-        return;
-      }
-
-      // Collect form values
-      const dbType = document.getElementById("dbType").value;
-      const host = document.getElementById("host").value;
-      const port = document.getElementById("port").value;
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const dbName = document.getElementById("dbName").value;
-
-      // Basic validation
-      if (!dbType || !host || !port || !dbName) {
-        alert("Please fill all required fields.");
-        return;
-      }
-
-      const jsonPayload = {
-        dbType,
-        host,
-        port: parseInt(port),
-        username,
-        password,
-        dbName,
-        backupType: "full"
-      };
-
-      const formData = new FormData();
-      formData.append("zipFile", fileInput.files[0]);
-      formData.append("request", JSON.stringify(jsonPayload));
-
-      status.classList.remove("hidden");
-      status.textContent = "Uploading...";
-
-      try {
-        const response = await fetch("/api/restore", {
-          method: "POST",
-          body: formData
-        });
-
-        if (!response.ok) {
-          throw new Error("Upload failed");
+        if (!fileInput.files.length) {
+            alert("Please select a .zip file to upload.");
+            return;
         }
 
-        status.textContent = "Success!
-                    Database restored successfully.";
-      } catch (error) {
-        console.error(error);
-        status.textContent = "Restore failed!";
-      }
+        // Collect form values
+        const dbType = document.getElementById("dbType").value;
+        const host = document.getElementById("host").value;
+        const port = document.getElementById("port").value;
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const dbName = document.getElementById("dbName").value;
+
+        // Basic validation
+        if (!dbType || !host || !port || !dbName) {
+            alert("Please fill all required fields.");
+            return;
+        }
+
+        const jsonPayload = {
+            dbType,
+            host,
+            port: parseInt(port),
+            username,
+            password,
+            dbName,
+            backupType: "full"
+        };
+
+        const formData = new FormData();
+        formData.append("zipFile", fileInput.files[0]);
+        formData.append("request", JSON.stringify(jsonPayload));
+
+        status.classList.remove("hidden");
+        status.textContent = "Uploading...";
+
+        try {
+            const response = await fetch("/api/restore", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error("Upload failed");
+            }
+
+            status.textContent = "Success! Database restored successfully.";
+        } catch (error) {
+            console.error(error);
+            status.textContent = "Restore failed!";
+        }
     });
 </script>
 
